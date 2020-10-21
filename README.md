@@ -1,5 +1,5 @@
 # ExpenseTracker
-My first web application. A simple expense tracker web app with bar graph to allow user to further visualize their expenses.
+My first web application. Expense Tracker is a web application that helps its user track all their expenses. Not only can they track the expenses with E-Track, but they can also see their weekly, monthly and yearly expenses which can further help them strategize how to save their budgets
   
 ## Features
 * Add expenses to track down
