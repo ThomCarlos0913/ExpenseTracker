@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!html>
+  <head>
+    <title>E-Track | Login Page</title>
+    <!-- Vue and Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" charset="utf-8"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="[[ url_for('static', filename='style.css') ]]" />
+  </head>
+  <body>
+    <div id="login-vue">
+      <!-- Learn More Overlay -->
+      <div class="overlay">
+        <div class="overlay-message">
+          <!-- E-Track Logo -->
+          <img src="[[ url_for('static', filename='etrack-logo-bigger.png') ]]" alt="Logo of E-Track">
+          <h1>Welcome to E-Track!</h1>
+          <p>Have you ever felt that for a moment you thought you still have this 'value' of money and the when you actually
+              look to see the actual 'value', its lower than expected? Then you suddenly scratch your head thinking where could
+              that missing values went to?<br />
+              <br />
+              E-Track helps you with those kind of situations! With E-Track, you can see and track all your expenses and not only
+              that. but it also helps you see your expense statistics weekly, monthly and yearly so that you can further plan how
+              you spend your budget. </p>
+          <p class="programmer-details"><span class="small-p">Programmed By:</span><br /><br />
+              <b>John Thomas Carlos</b><br />
+              <span class="small-p">Adamson University</span><br />
+              <span class="small-p">BS Computer Engineering</span><br />
+              <br />
+              johnthomas.carlos@gmail.com<br />
+              linkedin.com/in/jtc0913/</p>
+          <a href="#" class="close-btn" v-on:click="close_overlay()" class="bluebtn">Close</a>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <!-- Login Message Section -->
+          <div class="col-sm-6">
+            <div class="login-message">
+              <h1>Track your expenses now!</h1>
+              <p>With E-Track, not only you can track about your<br />
+                  expenses but you can also view your weekly,<br />
+                  monthly and yearly expenses to further manage<br />
+                  your expenses.</p>
+              <a href="#" v-on:click="open_overlay()" class="bluebtn">Learn More</a>
+              <div class="app-links">
+                <img src="[[ url_for('static', filename='coming-to-apple-app-store-small.png') ]]" alt="link button to apple app store" class="app-link-delete">
+                <img src="[[ url_for('static', filename='coming-to-google-play-store-small.png') ]]" alt="link button to google play store" class="app-link-delete">
+              </div>
+            </div>
+          </div>
+          <!-- Login Form Section -->
+          <div class="col-sm-6">
+            <div class="login-form">
+              <span><a href="#" class="choice active" v-on:click="change_choice(1)">Sign In</a> <span class="choice-separator">|</span> <a href="#" v-on:click="change_choice(2)" class="choice">Sign Up</a></span>
+              <!-- Login Form -->
+              <div id="signin-form">
+                <!-- Field Error Message -->
+                <div class="alert alert-danger alert-dismissible fade show incomplete-error" role="alert">Please fill out all fields</div>
+                <!-- Credential Error Message -->
+                <div class="alert alert-danger alert-dismissible fade show credential-error" role="alert">Invalid username or password</div>
+                <!-- Username textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Username</p>
+                  <input type="text" placeholder="Enter your username here" v-model="username"/>
+                </div>
+                <!-- Password textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Password</p>
+                  <input type="password" placeholder="Enter your password here" v-model="password"/>
+                </div>
+                <a href="#" class="form-action bluebtn" v-on:click="login_account()">Login Account</a>
+              </div>
+              <div id="signup-form">
+                <!-- Alert Messages -->
+                <div class="alert-message">
+                  <!-- Success Message -->
+                  <div class="alert alert-success alert-dismissible fade show account-created" role="alert">
+                    <strong>Success!</strong> Account created!
+                  </div>
+                  <!-- Password mismatch Message -->
+                  <div class="alert alert-danger alert-dismissible fade show password-mismatch" role="alert">
+                    Confirm password does not match password
+                  </div>
+                  <!-- Field Error Message -->
+                  <div class="alert alert-danger alert-dismissible fade show field-error" role="alert">
+                    Please fill out all fields
+                  </div>
+                  <!-- Email Taken Message -->
+                  <div class="alert alert-danger alert-dismissible fade show email-taken" role="alert">
+                    <strong>Shoot!</strong> Email is already taken
+                  </div>
+                  <!-- Invalid Email Message -->
+                  <div class="alert alert-danger alert-dismissible fade show invalid-email" role="alert">
+                    Invalid email address
+                  </div>
+                </div>
+                <!-- Username textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Username</p>
+                  <input type="text" placeholder="Enter your username here" v-model="username"/>
+                </div>
+                <!-- Password textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Password</p>
+                  <input type="password" placeholder="Enter your password here" v-model="password"/>
+                </div>
+                <!-- Confirm Password textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Confirm Password</p>
+                  <input type="password" placeholder="Enter confirm password here" v-model="confirm_pass"/>
+                </div>
+                <!-- Email textbox -->
+                <div class="form-textbox">
+                  <p class="textbox-label">Email Address</p>
+                  <input type="email" placeholder="Enter your email address here" v-model="email"/>
+                </div>
+                <a href="#" class="form-action bluebtn" v-on:click="register_account()">Create Account</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Javascript -->
+    <script type="text/javascript" src="[[ url_for('static', filename='scripts.js') ]]"charset="utf-8"></script>
+  </body>
+</html>

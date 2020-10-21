@@ -1,0 +1,404 @@
+<!html>
+  <head>
+    <title>E-Track | Home Page</title>
+    <!-- Vue and Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" charset="utf-8"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="[[ url_for('static', filename='style.css') ]]" />
+  </head>
+  <body>
+    <div id="home-vue">
+      <div class="overlay">
+        <!-- Join Message Overlay -->
+        <div class="overlay-message delete-join-message">
+          <div class="row join-message">
+            <h1 class="join-message-header">Join Now!</h1>
+            <p class="join-message-text">Create an account and join thousands of user who tracks their expenses with ExTrack.</p>
+            <a href="loginsignup" class="join-btn">Log In | Sign Up</a>
+            <a href="#" v-on:click="close_overlay()" class="delete-join-close-btn">Close</a>
+          </div>
+        </div>
+        <!-- Welcome Message Overlay -->
+        <div class="overlay-message welcome-message">
+          <h1>Welcome to E-Track!</h1>
+          <p>Welcome! The following data shown are for demonstration purposes only<br/>
+            In order to experience the full functionality of E-Track, please login to your account.</p>
+          <p class="programmer-details"><span class="small-p">Programmed By:</span><br /><br />
+              <b>John Thomas Carlos</b><br />
+              <span class="small-p">Adamson University</span><br />
+              <span class="small-p">BS Computer Engineering</span><br />
+              <br />
+              john.thomas.carlos@adamson.edu.ph<br />
+              linkedin.com/in/jtc0913/</p>
+          <a href="#" class="close-btn" v-on:click="close_overlay()" class="bluebtn">Close</a>
+        </div>
+        <!-- Edit Expense Overlay -->
+        <div class="overlay-message edit-expense">
+          <!-- Delete Warning Message -->
+          <!-- Edit Expense Message -->
+          <div class="alert alert-secondary update-message" role="alert">Edit / Update your expenses.</div>
+          <!-- Edit Success Message -->
+          <div class="alert alert-success update-successful" role="alert"><strong>Succes!</strong> The following item is successfully update.</div>
+          <!-- Delete Warning Message -->
+          <div class="alert alert-danger update-failure" role="alert"><strong>Update Failed.</strong> {{edit_expenese_message}}</div>
+          <span class="delete-details">
+            <div class=" banner-section banner-date-delete">
+              <p class="banner-label">Date</p>
+              <input class="banner-value-text" v-model="temp_detail_date" />
+            </div>
+            <div class=" banner-section banner-description-delete">
+              <p class="banner-label">Description</p>
+              <input class="banner-value-text desc-text" v-model="temp_detail_desc" />
+            </div>
+            <div class=" banner-section banner-expense">
+              <p class="banner-label">Expense</p>
+              <input class="banner-value-text" v-model="temp_detail_cost" />
+            </div>
+            <span class="delete-form-btn">
+              <a href="#" class="delete-btn edit-btn" v-on:click="updateexpense()">Edit Expense Tag</a>
+              <a href="#" class="delete-btn cancel-delete-btn" v-on:click="close_overlay()">Cancel</a>
+              <a href="#" class="delete-btn edit-btn" v-on:click="close_overlay()">Close</a>
+            </span>
+          </span>
+        </div>
+        <!-- Delete Message Overlay -->
+        <div class="overlay-message delete-message">
+          <!-- Delete Warning Message -->
+          <div class="alert alert-warning delete-warning" role="alert"><strong>Warning!</strong> Are you sure you want to delete the following item?</div>
+          <!-- Delete Success Message -->
+          <div class="alert alert-success delete-successful" role="alert"><strong>Succes!</strong> The following item is successfully deleted.</div>
+          <span class="delete-details">
+            <div class=" banner-section banner-date-delete">
+              <p class="banner-label">Date</p>
+              <p class="banner-value">{{detail_date}}</p>
+            </div>
+            <div class=" banner-section banner-description-delete">
+              <p class="banner-label">Description</p>
+              <p class="banner-value">{{detail_desc}}</p>
+            </div>
+            <div class=" banner-section banner-expense">
+              <p class="banner-label">Expense</p>
+              <p class="banner-value">{{currency_sign}}{{detail_cost}}</p>
+            </div>
+          </span>
+          <span class="delete-form-btn">
+            <a href="#" class="delete-btn" v-on:click="deleteexpense()">Delete Expense Tag</a>
+            <a href="#" class="delete-btn cancel-delete-btn" v-on:click="close_overlay()">Cancel</a>
+            <a href="#" class="close-delete-form-btn" v-on:click="close_overlay()">Close</a>
+          </span>
+        </div>
+      </div>
+      <!-- Navbar section -->
+      <div class="home-navbar">
+        <img src="[[ url_for('static', filename='etrack-logo.png') ]]" alt="e-track logo" title="Version 1.0.0.0"/>
+        <input class="search-text" type="text" v-model="keyword" v-on:keyup.enter="searchExpense()" placeholder="Search expense..."/>
+        <div class="username-btn">
+          <div v-on:click="showUsernameDropdown()" class="disable-select">{{username}} <div class="arrow-down"></div></div>
+          <ul class="username-dropdown">
+            <li href="#" v-on:click="showAccountSettings()">Account Settings</li>
+            <li href="#" v-on:click="logoutUser()">Logout</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Body Section -->
+      <div class="account-settings" v-on:click="closeDropdowns()">
+        <div class="container">
+          <!-- Back Home Section -->
+          <div class="go-to-dash" v-on:click="showDashboard()">
+            <span><img src="[[ url_for('static', filename='chevron.png') ]]" alt=""> <span class="back-home">Home</span></span>
+          </div>
+          <!-- Account Setting Header -->
+          <div class="section-header"> User Account Settings </div>
+          <!-- User Information -->
+          <div class="container">
+            <div class="row">
+              <!-- Column 1 -->
+              <div class="col-sm-6">
+                <!-- Change Username Section -->
+                <span class="sub-header">Change Username</span>
+                <div class="change-username-containerr">
+                  <!-- Username textbox -->
+                  <div class="form-textbox">
+                    <p class="textbox-label">Username</p>
+                    <input type="text" v-model="update_username"/>
+                  </div>
+                  <!-- Change Username Buttons -->
+                  <span class="button-container">
+                    <button type="button" class="btn btn-primary" v-on:click="updateuser(1)">Change Username</button>
+                  </span>
+                </div>
+                <!-- Change Currency Section -->
+                <span class="sub-header">Change Currency Symbol</span>
+                <div class="change-currency-container">
+                  <span>Currency Symbol :
+                    <select v-model="update_currency" class="" name="">
+                      <option value="$">$ US Dollar</option>
+                      <option value="€">€ Euro</option>
+                      <option value="¥">¥ Japanese Yen</option>
+                      <option value="₱">₱ Philippine Peso</option>
+                    </select>
+                  </span>
+                  <!-- Change Username Buttons -->
+                  <span class="button-container curr-btns">
+                    <button type="button" class="btn btn-primary" v-on:click="updateuser(2)">Change Currency</button>
+                  </span>
+                </div>
+                <!-- Delete Success Message -->
+                <div class="alert alert-success update-user-successful" role="alert"><strong>Succesfully updated {{update_message}}!</strong> The following changes will appear after you logged in and logged out.</div>
+              </div>
+              <!-- Column 2 -->
+              <div class="col-sm-6">
+                <!-- Change Password Section -->
+                <div class="change-password">
+                  <span class="sub-header">Change Password</span>
+                  <!-- New Password textbox -->
+                  <div class="form-textbox">
+                    <p class="textbox-label">New Password</p>
+                    <input type="password" v-model="update_new_pass" placeholder="Enter New Password Here.."/>
+                  </div>
+                  <!-- Confirm New Password textbox -->
+                  <div class="form-textbox">
+                    <p class="textbox-label">Confirm New Password</p>
+                    <input type="password" v-model="update_con_pass" placeholder="Enter Confirm New Password Here.."/>
+                  </div>
+                  <!-- Current Password textbox -->
+                  <div class="form-textbox">
+                    <p class="textbox-label">Current Password</p>
+                    <input type="password" v-model="update_cur_pass" placeholder="Enter Current Password Here.."/>
+                  </div>
+                  <!-- Change Password Buttons -->
+                  <span class="button-container">
+                    <button type="button" class="btn btn-primary" v-on:click="updateuser(3)">Change Password</button>
+                  </span>
+                </div>
+                <!-- Change Email Section -->
+                <div class="">
+                  <span class="sub-header">Change Email Address</span>
+                  <span class="current-email">Current Email Address: <span>{{email}}</span></span>
+                  <!-- Email Address textbox -->
+                  <div class="form-textbox">
+                    <p class="textbox-label">Email Address</p>
+                    <input type="text" v-model="update_new_email" placeholder="Enter New Email Here.."/>
+                    <!-- Change Password Buttons -->
+                    <span class="button-container">
+                      <button type="button" v-on:click="updateuser(4)" class="btn btn-primary">Change Email</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dashboard Section -->
+      <div class="dashboard">
+        <div v-on:click="closeDropdowns()">
+          <div class="container">
+            <div class="row">
+              <!-- Column 1 -->
+              <div class="col-sm-6">
+                <!-- Navigation buttons -->
+                <div class="nav-btns">
+                  <span><a href="#" class="nav-btn" v-on:click="choiceswitch(1)">Create New</a>
+                    <div class="vr">&nbsp;</div>
+                    <a href="#" class="nav-btn active" v-on:click="choiceswitch(2)">Dashboard</a>
+                    <div class="vr">&nbsp;</div>
+                    <a href="#"class="nav-btn" v-on:click="choiceswitch(3)">View All Expenses</a></span>
+                </div>
+                <!-- Recent Expenses Section -->
+                <div class="recent-section">
+                  <div class="section-header"> Recent Reports </div>
+                  <div class="container recent-div">
+                    <!-- Empty Reports Message -->
+                    <div v-if="reportIsEmpty" class="empty-message">
+                      <img src="[[ url_for('static', filename='empty-box.png') ]]" alt="empty box image">
+                      <p class="empty-text">Oops.. It seems you dont have any reports yet.</p>
+                    </div>
+                    <div v-for="(item, index) in recent_expenses" class="recent-container">
+                      <span>
+                        <div class=" banner-section banner-date">
+                          <p class="banner-label">Date</p>
+                          <p class="banner-value">{{item['date']}}</p>
+                        </div>
+                        <div class=" banner-section banner-description">
+                          <p class="banner-label">Description</p>
+                          <p class="banner-value">{{item['description']}}</p>
+                        </div>
+                        <div class=" banner-section banner-expense">
+                          <p class="banner-label">Expense</p>
+                          <p class="banner-value">{{currency_sign}}{{item['cost']}}</p>
+                        </div>
+                        <div class=" banner-section">
+                          <div class="expense-rating"></div>
+                        </div>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Create New Section -->
+                <div class="create-new-section">
+                  <div class="create-new-form">
+                    <div class="row form-e1">
+                      <div class="date-label">Date of Expense:</div>
+                      <div class="row">
+                        <select v-model="day" class="date-dropdown">
+                          <option v-model="day" selected="selected">Day</option>
+                          <option value="01">1</option>
+                          <option value="02">2</option>
+                          <option value="03">3</option>
+                          <option value="04">4</option>
+                          <option value="05">5</option>
+                          <option value="06">6</option>
+                          <option value="07">7</option>
+                          <option value="08">8</option>
+                          <option value="09">9</option>
+                          <option value="10">10</option>
+                          <option value="11">11</option>
+                          <option value="12">12</option>
+                          <option value="13">13</option>
+                          <option value="14">14</option>
+                          <option value="15">15</option>
+                          <option value="16">16</option>
+                          <option value="17">17</option>
+                          <option value="18">18</option>
+                          <option value="19">19</option>
+                          <option value="20">20</option>
+                          <option value="21">21</option>
+                          <option value="22">22</option>
+                          <option value="23">23</option>
+                          <option value="24">24</option>
+                          <option value="25">25</option>
+                          <option value="26">26</option>
+                          <option value="27">27</option>
+                          <option value="28">28</option>
+                          <option value="29">29</option>
+                          <option value="30">30</option>
+                          <option value="31">31</option>
+                        </select>
+                        <select v-model="month" class="date-dropdown">
+                          <option v-model="month" selected="selected">Month</option>
+                          <option value="01">January</option>
+                          <option value="02">February</option>
+                          <option value="03">March</option>
+                          <option value="04">April</option>
+                          <option value="05">May</option>
+                          <option value="06">June</option>
+                          <option value="07">July</option>
+                          <option value="08">August</option>
+                          <option value="09">September</option>
+                          <option value="10">October</option>
+                          <option value="11">November</option>
+                          <option value="12">December</option>
+                        </select>
+                        <select v-model="year" class="date-dropdown">
+                          <option v-model="year" selected="selected">Year</option>
+                          <option value="2018">2018</option>
+                          <option value="2019">2019</option>
+                          <option value="2020">2020</option>
+                        </select>
+                      </div>
+                      <!-- Description textbox -->
+                      <div class="form-textbox">
+                        <p class="textbox-label">Short Description</p>
+                        <input type="text" placeholder="Ex. Dinner at McDonalds" v-model="short_desc"/>
+                      </div>
+                      <!-- Total Expenses textbox -->
+                      <div class="form-textbox">
+                        <p class="textbox-label">Total Expenses</p>
+                        <input type="text" placeholder="Ex. 200" v-model="cost" />
+                      </div>
+                      <span class="create-form-btn">
+                        <a href="#" class="create-btn" v-on:click="createexpense()">Create Expense Tag</a>
+                        <a href="#" class="create-btn cancel-btn" v-on:click="">Cancel</a>
+                      </span>
+                      <!-- Field Error Message -->
+                      <div class="alert alert-danger alert-dismissible fade show error-incomplete" role="alert">Please fill out all fields</div>
+                      <!-- Expense Field Message -->
+                      <div class="alert alert-danger alert-dismissible fade show error-expense-field" role="alert">Total Expense should be numeric</div>
+                      <!-- Success Message -->
+                      <div class="alert alert-success alert-dismissible fade show expense-created" role="alert">
+                        <strong>Success!</strong> Expense tag created!
+                      </div>
+                    </div>
+                    <div class="row join-message">
+                      <h1 class="join-message-header">Join Now!</h1>
+                      <p class="join-message-text">Create an account and join thousands of user who tracks their expenses with ExTrack.</p>
+                      <a href="loginsignup" class="join-btn">Log In | Sign Up</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Column 2 -->
+              <div class="col-sm-6 statistics-section">
+                <div class="section-header r-section-header"> Report Statistics</div>
+                <div class="nav-btns stat-btns">
+                  <span>
+                    <a href="#" class="nav-btn active" v-on:click="chooseStat(1)">Monthly</a>
+                    <div class="vr">&nbsp;</div>
+                    <a href="#" class="nav-btn" v-on:click="chooseStat(2)">Yearly</a></span>
+                </div>
+                <div class="statContainer" id="daily-stat">
+                  <canvas id="dailyStatistics" width="300px" height="270px"></canvas>
+                </div>
+                <div class="statContainer" id="monthly-stat">
+                  <canvas id="monthlyStatistics" width="300px" height="270px"></canvas>
+                </div>
+                <div class="statContainer" id="yearly-stat">
+                  <canvas id="yearlyStatistics" width="300px" height="270px"></canvas>
+                </div>
+                <!-- Average Section -->
+                <div class="ave-container">
+                  <div class="average-tag" title="Your current average monthly expenses">Current Monthly Expenses: <span class="average-value">{{currency_sign}} {{ave_month}}</span></div>
+                  <div class="average-tag" title="Your average yearly expenses">Average Yearly Expenses: <span class="average-value">{{currency_sign}} {{ave_year}}</span></div>
+                </div>
+              </div>
+              <!-- View All Expenses Section -->
+              <div class="all-expenses-section">
+                <div class="container">
+                  <table>
+                    <tr class="table-header">
+                      <td>Date</td>
+                      <td class="expense-table-header">Short Description</td>
+                      <td>Expense</td>
+                      <td class="delete-table-header"></td>
+                    </tr>
+                    <tr class="table-content expense-details" v-for="(item, index) in all_expenses">
+                      <td v-on:click="showDetails(item['date'], item['description'], item['cost'], item['exp_id'], 2)">{{item['date']}}</td>
+                      <td v-on:click="showDetails(item['date'], item['description'], item['cost'], item['exp_id'], 2)">{{item['description']}}</td>
+                      <td v-on:click="showDetails(item['date'], item['description'], item['cost'], item['exp_id'], 2)">{{currency_sign}}{{item['cost']}}</td>
+                      <td class="delete-entry-column"><span class="delete-entry-btn" v-on:click="showDetails(item['date'], item['description'], item['cost'], item['exp_id'], 1)">&#x2BBD</span></td>
+                    </tr>
+                  </table>
+                  <!-- Empty Reports Message -->
+                  <div v-if="reportIsEmpty" class="empty-message all-reports-empty">
+                    <img src="[[ url_for('static', filename='empty-box.png') ]]" alt="">
+                    <p class="empty-text all-reports-empty-text">Oops.. It seems you dont have any reports yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="search-dropdown" v-on:click="keepDropdown(1)">
+        <span class="total-searched">Found a total of {{total_searched}} expenses...</span>
+        <span class="search-nothing">Nothing was found. Try a different description, date or cost keyword.</span>
+        <div v-for="(item, index) in searchedExp">
+          <span class="search-item" v-on:click="showDetails(item['date'], item['description'], item['cost'], item['exp_id'], 2)">
+            <span class="search-date">{{item['date']}}</span> <span class="search-description">{{item['description']}}</span> <span class="search-cost">{{currency_sign}}{{item['cost']}}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- Javascript -->
+    <script type="text/javascript" src="[[ url_for('static', filename='scripts.js') ]]"></script>
+  </body>
+</html>
